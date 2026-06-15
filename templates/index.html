@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance Predictor & Analyzer</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <i class="fa-solid fa-graduation-cap brand-icon"></i>
+                <h2>EduPredict</h2>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active" data-tab="predictor">
+                    <i class="fa-solid fa-calculator"></i>
+                    <span>Score Predictor</span>
+                </a>
+                <a href="#" class="menu-item" data-tab="analytics">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Insights & Analytics</span>
+                </a>
+                <a href="#" class="menu-item" data-tab="about">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>Model Details</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <p>Status: <span class="badge-status">Active</span></p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="content-header">
+                <div class="header-title-area">
+                    <h1 id="page-title">Predictive Score Dashboard</h1>
+                    <p class="subtitle">Leveraging Random Forest models to analyze habits and performance metrics.</p>
+                </div>
+                <div class="user-profile">
+                    <div class="avatar"><i class="fa-solid fa-user-graduate"></i></div>
+                </div>
+            </header>
+
+            <!-- Tab: Score Predictor -->
+            <section id="predictor-tab" class="tab-content active">
+                <div class="dashboard-grid">
+                    <!-- Predictor Form Card -->
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-sliders header-icon"></i>Input Student Metrics</h3>
+                        </div>
+                        <form id="prediction-form" class="prediction-form">
+                            <div class="form-group">
+                                <label for="previous_score">Previous Exam Score (%)</label>
+                                <div class="slider-container">
+                                    <input type="range" id="previous_score" name="previous_score" min="40" max="100" value="70">
+                                    <span class="value-display" id="previous_score_val">70%</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="study_hours">Daily Study Hours</label>
+                                <div class="slider-container">
+                                    <input type="range" id="study_hours" name="study_hours" min="1" max="10" step="0.5" value="5.5">
+                                    <span class="value-display" id="study_hours_val">5.5h</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="distraction_time">Daily Distraction Time (Hours)</label>
+                                <div class="slider-container">
+                                    <input type="range" id="distraction_time" name="distraction_time" min="0" max="5" step="0.1" value="2.0">
+                                    <span class="value-display" id="distraction_time_val">2.0h</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="lessons_completed">Lessons Completed</label>
+                                <div class="slider-container">
+                                    <input type="range" id="lessons_completed" name="lessons_completed" min="1" max="20" value="10">
+                                    <span class="value-display" id="lessons_completed_val">10</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sleep_hours">Daily Sleep Hours</label>
+                                <div class="slider-container">
+                                    <input type="range" id="sleep_hours" name="sleep_hours" min="4" max="9" step="0.5" value="7.0">
+                                    <span class="value-display" id="sleep_hours_val">7.0h</span>
+                                </div>
+                            </div>
+
+                            <div class="form-row-two-col">
+                                <div class="form-group">
+                                    <label for="group_study">Participate in Group Study?</label>
+                                    <div class="toggle-container">
+                                        <input type="checkbox" id="group_study" name="group_study" class="toggle-checkbox">
+                                        <label for="group_study" class="toggle-label"></label>
+                                        <span class="toggle-text" id="group_study_text">No</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="learning_style">Preferred Learning Style</label>
+                                    <select id="learning_style" name="learning_style" class="custom-select">
+                                        <option value="theory">Theory-focused</option>
+                                        <option value="practice">Practice-focused</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-primary">
+                                <span>Calculate Projection</span>
+                                <i class="fa-solid fa-circle-play"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Predictions Results Column -->
+                    <div class="result-column">
+                        <!-- Score Display Card -->
+                        <div class="card glass-card score-result-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-gauge-high header-icon"></i>Projected Performance</h3>
+                            </div>
+                            <div class="score-display-body">
+                                <div class="gauge-wrapper">
+                                    <div class="gauge-center">
+                                        <span id="predicted-score-text">--</span>
+                                        <span class="gauge-unit">%</span>
+                                    </div>
+                                    <svg class="gauge-svg" viewBox="0 0 100 100">
+                                        <circle class="gauge-track" cx="50" cy="50" r="45"></circle>
+                                        <circle class="gauge-fill" id="gauge-fill-circle" cx="50" cy="50" r="45"></circle>
+                                    </svg>
+                                </div>
+                                <div class="score-label-badge" id="score-badge">Submit form to predict</div>
+                            </div>
+                        </div>
+
+                        <!-- Recommendations Card -->
+                        <div class="card glass-card recommendations-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-lightbulb header-icon"></i>Actionable Recommendations</h3>
+                            </div>
+                            <div class="recommendations-list" id="recommendations-container">
+                                <div class="empty-state">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                    <p>Recommendations will appear here once projection is computed.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab: Insights & Analytics -->
+            <section id="analytics-tab" class="tab-content">
+                <div class="analytics-grid">
+                    <!-- Feature Importances -->
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-chart-bar header-icon"></i>Model Feature Importance</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="importanceChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Correlations -->
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-arrows-left-right header-icon"></i>Metric Correlation with Final Score</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="correlationChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Stats Cards Row -->
+                    <div class="card glass-card full-width-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-table header-icon"></i>Dataset Overview (Average Student Metrics)</h3>
+                        </div>
+                        <div class="stats-table-wrapper">
+                            <table class="stats-table" id="dataset-stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Metric</th>
+                                        <th>Average (Mean)</th>
+                                        <th>Min Value</th>
+                                        <th>Max Value</th>
+                                        <th>Standard Dev</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td colspan="5" style="text-align: center;">Loading analytics...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab: About / Model Details -->
+            <section id="about-tab" class="tab-content">
+                <div class="about-container">
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-gear header-icon"></i>Model Architecture & Performance</h3>
+                        </div>
+                        <div class="about-content">
+                            <p>This analyzer uses a <strong>Random Forest Regressor</strong> model trained on synthetically generated student behavior datasets matching standard study habit patterns.</p>
+                            
+                            <div class="metrics-grid">
+                                <div class="metric-box">
+                                    <h4 id="r2-val">--</h4>
+                                    <p>R² (Variance Explained)</p>
+                                </div>
+                                <div class="metric-box">
+                                    <h4 id="mae-val">--</h4>
+                                    <p>Mean Absolute Error (MAE)</p>
+                                </div>
+                                <div class="metric-box">
+                                    <h4 id="mse-val">--</h4>
+                                    <p>Mean Squared Error (MSE)</p>
+                                </div>
+                            </div>
+                            
+                            <h4 class="section-title">Habit Formula Context</h4>
+                            <p>The projection model weights performance parameters. Specifically:
+                                <ul>
+                                    <li><strong>Study Hours</strong> and <strong>Distraction Hours</strong> are combined to evaluate <em>effective study time</em>.</li>
+                                    <li><strong>Sleep Hours</strong> are critical to cognitive functions and act as a score multiplier in training.</li>
+                                    <li><strong>Previous score</strong> acts as the student's foundation level.</li>
+                                </ul>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <!-- Main JavaScript -->
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
