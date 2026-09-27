@@ -3,11 +3,24 @@ import joblib
 import pandas as pd
 import numpy as np
 import os
+from pathlib import Path
 
-app = Flask(__name__)
+BASE_DIR = Path(__file__).resolve().parent
+ON_VERCEL = os.environ.get("VERCEL") == "1"
+
+# Vercel serves files in public/ through its CDN. Keep Flask's static route
+# enabled locally so `python app.py` continues to work during development.
+app = Flask(
+    __name__,
+    template_folder=str(BASE_DIR / "templates"),
+    static_folder=None if ON_VERCEL else str(BASE_DIR / "public" / "static"),
+    static_url_path="/static",
+)
 
 # Load model assets
-MODEL_PATH = "student_model.joblib"
+MODEL_PATH = BASE_DIR / "student_model.joblib"
+
+
 if os.path.exists(MODEL_PATH):
     model_data = joblib.load(MODEL_PATH)
     model = model_data['model']
@@ -106,10 +119,10 @@ def predict():
 
 @app.route('/api/analytics', methods=['GET'])
 def get_analytics():
-    if not os.path.exists("data.csv"):
+    if not (BASE_DIR / "data.csv").exists():
         return jsonify({'error': 'Dataset not found.'}), 404
         
-    df = pd.read_csv("data.csv")
+    df = pd.read_csv(BASE_DIR / "data.csv")
     
     # Preprocess categorical variable to get correlation
     df_numeric = df.copy()
@@ -140,4 +153,4 @@ def get_analytics():
     })
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=os.environ.get("FLASK_DEBUG") == "1", port=5000)

@@ -358,7 +358,7 @@ cd EduPredict
 Install dependencies:
 
 ```bash
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 ---
@@ -388,6 +388,19 @@ Open:
 ```text
 http://127.0.0.1:5000
 ```
+
+---
+
+## ☁️ Deploying to Vercel
+
+This Flask application is configured for Vercel's Python runtime. To deploy it:
+
+1. Push the project to a GitHub repository.
+2. In Vercel, choose **Add New → Project** and import that repository.
+3. Keep the project root as the repository root and use the detected Python/Flask settings; no build command or environment variables are required.
+4. Deploy. Vercel serves the dashboard and its assets, and runs the Flask routes as a Function.
+
+The trained model (`student_model.joblib`), dataset (`data.csv`), and templates are included with the Python function. Static assets are stored in `public/static/` for Vercel's CDN. The Python and package versions are set in `.python-version` and `requirements.txt`.
 
 ---
 
